@@ -1,0 +1,22 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+
+development:
+  <<: *default
+  database: volt_dev
+  username: postgres
+  #password: 12345
+
+test:
+  <<: *default
+  database: volt_test
+  username: postgres
+  #password: 12345
+
+production:
+  <<: *default
+  database: volt_prod
+  username: volt_prod_user
+  password: 12345
