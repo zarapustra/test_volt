@@ -6,7 +6,7 @@ class ApplicationController < ActionController::API
   private
 
   def authenticate_request
-    Auth::AuthorizeApiRequest.call(params) do
+    Auth::AuthorizeApiRequest.call(request) do
       on(:ok) { |user| @current_user = user }
       on(:error) do |msg|
         logger.error(msg)
