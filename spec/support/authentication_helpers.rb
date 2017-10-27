@@ -1,15 +1,13 @@
 module AuthenticationHelpers
 
-  CREDENTIALS = {email: Faker::Internet.email, password: Faker::Internet.password(10, 20)}
+  CREDENTIALS = {
+    email: Faker::Internet.email,
+    password: Faker::Internet.password(10, 20),
+    nickname: 'Alex'
+  }
 
-  def credentials
-    {email: Faker::Internet.email, password: Faker::Internet.password(10, 20)}
-  end
 
   def sign_in!(params = CREDENTIALS)
-    # basic_authorize params[:email], params[:password]
-    # post '/authenticate', format: :json
-    # @user = User.find_by(email: params[:email])
     @user = User.create(params)
     post '/authenticate', params, format: :json
     @token = json['auth_token']
@@ -21,6 +19,13 @@ module AuthenticationHelpers
   def headers(params = CREDENTIALS)
     sign_in!(params)
   end
+
+  # def credentials
+  #   {
+  #     email: Faker::Internet.email,
+  #     password: Faker::Internet.password(10, 20)
+  #   }
+  # end
 end
 
 RSpec.configure do |c|

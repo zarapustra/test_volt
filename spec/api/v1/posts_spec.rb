@@ -1,13 +1,42 @@
 require 'rails_helper'
 
 describe 'POST/GET /posts/1' do
-  post_params = {title: 'Title', body: 'Body', published_at: Time.current }
-  # let(:post) { Post::Create.(post: post_params).model }
+  URL = '/api/v1/posts'
+  nickname = AuthenticationHelpers::CREDENTIALS[:nickname]
+  params = {
+    title: 'Title',
+    body: 'Body'
+  }
+  it 'create post WITHOUT time sent' do
+    now = Time.current.to_formatted_s(:datetime)
 
-  it 'create post' do
-    post '/api/v1/posts', post_params, headers
-    expect_200
-    expect(last_response.body).to eq(post_params.to_json)
+    post URL, params, headers
+    expect_status(200)
+
+    expect(json['title']).to eq(params[:title])
+    expect(json['body']).to eq(params[:body])
+    expect(json['author_nickname']).to eq(nickname)
+    expect(json['published_at']).to eq(now)
+  end
+
+  it 'create post WITH time sent' do
+    time = 1.year.ago.to_formatted_s(:datetime)
+    params_with_time = params.merge(published_at: time)
+
+    post URL, params_with_time, headers
+    expect_status(200)
+
+    expect(json['title']).to eq(params[:title])
+    expect(json['body']).to eq(params[:body])
+    expect(json['author_nickname']).to eq(nickname)
+    expect(json['published_at']).to eq(time)
+  end
+
+  it 'return errors if form invalid' do
+    post URL, {}, headers
+    expect_status(422)
+    expect(json['errors']['title']).to eq(['can\'t be blank'])
+    expect(json['errors']['body']).to eq(['can\'t be blank'])
   end
 end
 
@@ -24,7 +53,7 @@ end
 #   end
 #
 #   it 'renders' do
-#     get '/api/v1/posts'
+#     get URL
 #     expect(last_response.body).to eq(posts_json)
 #   end
 # end

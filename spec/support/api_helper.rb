@@ -13,8 +13,8 @@ module ApiHelper
     last_response.status
   end
 
-  def expect_200
-    expect(status).to eql(200)
+  def expect_status(num)
+    expect(status).to eql(num)
   end
 end
 
