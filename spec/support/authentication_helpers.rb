@@ -9,7 +9,7 @@ module AuthenticationHelpers
 
   def sign_in!(params = CREDENTIALS)
     @user = User.create(params)
-    post '/authenticate', params, format: :json
+    post '/api/v1/authenticate', params, format: :json
     @token = json['auth_token']
     @headers = {
       'Authenticate' => "Token #{@token}"
