@@ -17,8 +17,8 @@ class Api::V1::PostsController < ApiController
   def index
     Post::Command::Index.call(params) do
       on(:ok) do |json, total_pages, total_posts|
-        response.set_header("Total-Pages", total_pages)
-        response.set_header("Total-Posts", total_posts)
+        response.set_header('Total-Pages', total_pages)
+        response.set_header('Total-Posts', total_posts)
         render json: json
       end
     end
