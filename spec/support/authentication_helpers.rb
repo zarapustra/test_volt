@@ -1,11 +1,9 @@
 module AuthenticationHelpers
-
   CREDENTIALS = {
     email: Faker::Internet.email,
     password: Faker::Internet.password(10, 20),
     nickname: 'Alex'
   }
-
 
   def sign_in!(params = CREDENTIALS)
     @user = User.create(params)
@@ -19,13 +17,6 @@ module AuthenticationHelpers
   def headers(params = CREDENTIALS)
     sign_in!(params)
   end
-
-  # def credentials
-  #   {
-  #     email: Faker::Internet.email,
-  #     password: Faker::Internet.password(10, 20)
-  #   }
-  # end
 end
 
 RSpec.configure do |c|
