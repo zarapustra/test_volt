@@ -10,9 +10,6 @@ class Mailer < ActionMailer::Base
       to: email,
       subject: 'Report by author'
     }
-    mail(params) do |format|
-      format.html { render layout: false }
-      format.text
-    end
+    mail(params)
   end
 end

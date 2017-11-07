@@ -1,6 +1,7 @@
 class Post::Command::Create < Rectify::Command
+  attr_reader :form
   def initialize(params)
-    @params = params
+    @form = Post::PostForm.from_params(params)
   end
 
   def call
@@ -16,9 +17,5 @@ class Post::Command::Create < Rectify::Command
 
   def model
     Post.create(form.attributes)
-  end
-
-  def form
-    @_form ||= Post::PostForm.from_params(@params)
   end
 end
