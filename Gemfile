@@ -17,6 +17,8 @@ gem 'multi_json'
 gem 'rectify'
 gem 'kaminari'
 gem 'sidekiq'
+gem 'authlogic'
+
 
 group :development do
   gem 'web-console', '>= 3.3.0'
