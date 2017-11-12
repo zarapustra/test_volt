@@ -12,13 +12,14 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'pg'
+gem 'rectify'
 gem 'jwt'
 gem 'multi_json'
-gem 'rectify'
 gem 'kaminari'
 gem 'sidekiq'
-gem 'authlogic'
 
+gem 'carrierwave'
+gem 'mini_magick'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
