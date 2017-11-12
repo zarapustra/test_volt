@@ -2,12 +2,12 @@ module AuthenticationHelpers
   CREDENTIALS = {
     email: Faker::Internet.email,
     password: Faker::Internet.password(10, 20),
-    nickname: 'Alex'
+    nickname: 'creator'
   }
 
   def sign_in!(params = CREDENTIALS)
     @user = User.create(params)
-    post '/api/v1/authenticate', params, format: :json
+    post '/api/v1/sign_in', params, format: :json
     @token = json['auth_token']
     @headers = {
       'Authenticate' => "Token #{@token}"
