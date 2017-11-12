@@ -5,6 +5,6 @@ class Report::Command::ByAuthor < Rectify::Command
 
   def call
     return broadcast(:ok, @form.attributes) if @form.valid?
-    broadcast(:error, @form.errors)
+    broadcast(:invalid, @form.errors)
   end
 end
