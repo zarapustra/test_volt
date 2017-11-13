@@ -118,6 +118,7 @@ GEM
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
+    mini_magick (4.8.0)
     mini_mime (0.1.4)
     mini_portile2 (2.3.0)
     minitest (5.10.3)
@@ -255,6 +256,7 @@ DEPENDENCIES
   jwt
   kaminari
   listen (>= 3.0.5, < 3.2)
+  mini_magick
   multi_json
   parallel_tests
   pg

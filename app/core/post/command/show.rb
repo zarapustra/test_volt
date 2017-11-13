@@ -1,20 +1,18 @@
 class Post::Command::Show < Rectify::Command
+  attr_reader :post
+
   def initialize(params)
-    @params = params
+    @post ||= Post.find_by(id: params[:id])
   end
 
   def call
-    return broadcast(:not_found) unless model
+    return broadcast(:not_found) unless post
     broadcast(:ok, presenter)
   end
 
   private
 
   def presenter
-    Post::PostPresenter.new(post: model)
-  end
-
-  def model
-    Post.find_by(id: @params[:id])
+    Post::PostPresenter.new(post: post)
   end
 end

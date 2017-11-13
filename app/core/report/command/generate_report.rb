@@ -7,7 +7,7 @@ class Report::Command::GenerateReport < Rectify::Command
   def initialize(params)
     @msg_error = nil
     @file_name = "Report-by-author-#{Time.now.to_i}"
-    @users = User::Request::UsersWithCounts.new(
+    @users = User::UsersWithCounts.new(
       params[:start_date], params[:end_date]
     ).query
   end
@@ -24,9 +24,9 @@ class Report::Command::GenerateReport < Rectify::Command
 
   private
 
-  def remove_old_files! # TODO refactor
-    Dir['tmp/Report-by-author*.csv'].map { |f| File.delete(f) }
-    Dir['tmp/Report-by-author*.zip'].map { |f| File.delete(f) }
+  def remove_old_files!
+    Dir['tmp/Report-by-author*']
+      .map { |f| File.delete(f) }
   end
 
   def generate_csv!

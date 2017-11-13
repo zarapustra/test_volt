@@ -2,7 +2,8 @@ module AuthenticationHelpers
   CREDENTIALS = {
     email: Faker::Internet.email,
     password: Faker::Internet.password(10, 20),
-    nickname: 'creator'
+    nickname: 'creator',
+    avatar: File.open(Rails.root.join('spec', 'support', 'one.jpg'))
   }
 
   def sign_in!(params = CREDENTIALS)

@@ -1,4 +1,4 @@
-class ImageUploader < BaseUploader
+class AvatarUploader < CarrierWave::Uploader::Base
   include CarrierWave::MiniMagick
 
   storage :file
@@ -7,9 +7,11 @@ class ImageUploader < BaseUploader
     "uploads/#{model.class.to_s.underscore}/new/#{mounted_as}/#{id_partition}/#{model.id}"
   end
 
-  version :medium do
-    process resize_to_fill: [300, 300]
+  def extension_whitelist
+    %w(jpg jpeg gif png)
   end
+
+  process resize_to_fit: [300, 300]
 
   version :thumb do
     process resize_to_fill: [100, 100]

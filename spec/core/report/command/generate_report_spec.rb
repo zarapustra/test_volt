@@ -21,8 +21,8 @@ describe Report::Command::GenerateReport, type: :command do
     expect { Report::Command::GenerateReport.call(params) }.to broadcast(:ok)
     rows = CSV.read(Dir['tmp/Report-by-author*.csv'].last).drop(1)
     expect(rows.size).to eq(2)
-    expect(rows.first[0]).to eq(user1.nickname)
-    expect(rows.last[0]).to eq(user2.nickname)
+    expect(rows.first).to eq([user1.nickname, user1.email, '3', '15'])
+    expect(rows.last).to eq([user2.nickname, user2.email, '2', '21'])
 
     user3 = create(:user)
     posts3 = 3.times.map { create(:post, user: user3, published_at: dates.sample) }

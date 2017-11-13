@@ -17,7 +17,7 @@ class User::Command::SignUp < Rectify::Command
   def user
     User.create(form.attributes)
   rescue => e
-    @msg_error = "User creation: #{e.message}"
+    @msg_error = "Error, creating user: #{e.message}"
     false
   end
 end

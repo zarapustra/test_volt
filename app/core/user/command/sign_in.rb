@@ -1,11 +1,11 @@
 class User::Command::SignIn < Rectify::Command
   def initialize(params = {})
     @params = params
-    @user = User::Request::FindByEmail.new(params[:email]).query
+    @user = User.find_by(email: params[:email])
   end
 
   def call
-    return broadcast(:error, form.errors) unless @user || form.valid?
+    return broadcast(:error, form.errors) unless @user && form.valid?
     return broadcast(:ok, token) if token
     broadcast(:error, 'Problem with encrypting token')
   end
