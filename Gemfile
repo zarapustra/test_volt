@@ -39,6 +39,8 @@ group :test do
   gem 'factory_girl_rails'
   gem 'rspec-sidekiq'
   gem 'wisper-rspec', require: false # testing rectify::command
+  gem 'rspec_api_documentation'
+  gem 'raddocs'
 end
 
 group :development, :test do

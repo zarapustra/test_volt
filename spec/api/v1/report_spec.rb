@@ -16,7 +16,7 @@ describe 'GET /api/v1/reports/by_author' do
     get url, params, headers
 
     expect_status(200)
-    expect(json['message']).to eq('Report generation started')
+    expect(json[:message]).to eq('Report generation started')
     expect(Report::ByAuthorWorker).to have_enqueued_sidekiq_job(params)
     Report::ByAuthorWorker.drain
     expect(Sidekiq::Extensions::DelayedMailer.jobs.size).to eq(1)
@@ -30,7 +30,7 @@ describe 'GET /api/v1/reports/by_author' do
     }
     get url, params, headers
     expect_status(422)
-    expect(json['errors']['dates']).to eq(['Start date is later than end date'])
+    expect(json[:errors][:dates]).to eq(['Start date is later than end date'])
   end
 
   it 'renders errors when email is empty' do
@@ -41,7 +41,7 @@ describe 'GET /api/v1/reports/by_author' do
     }
     get url, params, headers
     expect_status(422)
-    expect(json['errors']['email']).to eq(['can\'t be blank'])
+    expect(json[:errors][:email]).to eq(['can\'t be blank'])
   end
 
   it 'renders errors when start_date is empty' do
@@ -52,7 +52,7 @@ describe 'GET /api/v1/reports/by_author' do
     }
     get url, params, headers
     expect_status(422)
-    expect(json['errors']['start_date']).to eq(['can\'t be blank'])
+    expect(json[:errors][:start_date]).to eq(['can\'t be blank'])
   end
 
   it 'renders errors when start_date is empty' do
@@ -63,6 +63,6 @@ describe 'GET /api/v1/reports/by_author' do
     }
     get url, params, headers
     expect_status(422)
-    expect(json['errors']['end_date']).to eq(['can\'t be blank'])
+    expect(json[:errors][:end_date]).to eq(['can\'t be blank'])
   end
 end

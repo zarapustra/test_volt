@@ -1,84 +1,98 @@
 require 'rails_helper'
+require Rails.root.join('spec', 'api', 'v1', 'shared_examples', 'respond_with.rb')
 
-describe 'User', type: :request do
+describe Api::V1::UsersController, type: :request do
+  describe 'POST /api/v1/sign_up' do
+    before { post '/api/v1/sign_up', params }
 
-  it 'POST /api/v1/sign_up' do
-    params = {
-      email: Faker::Internet.email,
-      password: Faker::Internet.password(10, 20),
-      nickname: 'creator',
-      avatar: Rails.root.join('spec', 'support', 'one.jpg')
+    context 'when params are valid' do
+      let(:params) { attributes_for(:user) }
+
+      it_behaves_like 'respond with', 201
+      it 'creates a user' do
+        expect(User.count).to eq(1)
+      end
+    end
+
+    context 'when invalid param is' do
+      #
+    end
+  end
+end
+
+describe 'POST /api/v1/sign_in' do
+  let(:user) { create(:user) }
+  let(:params) do
+    {
+      email: user.email,
+      password: attributes_for(:user)[:password]
     }
-    post '/api/v1/sign_up', params
-    expect_status(201)
-    user = User.last
-    expect(user.avatar.url).to include('one.jpg')
+  end
+  before { post '/api/v1/sign_in', params, format: :json }
+
+  it_behaves_like 'respond with', 200
+  it 'renders valid token' do
+    expect(json[:auth_token]).to eq(token! user)
+  end
+end
+
+describe 'PUT /api/v1/users' do
+  let(:user) { create(:user) }
+  let(:second_user) { create(:user) }
+
+  before { put "api/v1/users/#{user.id}", params, headers(user) }
+
+  context 'when avatar is' do
+    context 'valid' do
+      let(:params) { {avatar: Rails.root.join('spec', 'support', 'two.jpg')} }
+
+      it_behaves_like 'respond with', 204
+      it 'renders url of new image' do
+        expect(user.reload.avatar.url).to include('two.jpg')
+      end
+    end
+
+    context 'not image' do
+      let(:params) { {avatar: Rails.root.join('spec', 'support', 'mailer.txt')} }
+
+      it 'doesn\'t change avatar' do
+        expect(user.avatar.url).to include('one.jpg')
+      end
+    end
   end
 
-  it 'POST /api/v1/sign_in' do
-    sign_in!
-    expect_status(200)
-    user_id = JsonWebToken.decode(@token)[:user_id]
-    expect(user_id).to eq(@user.id)
-  end
+  context 'when nickname is' do
+    context 'valid' do
+      let(:params) { {nickname: 'dude'} }
 
-  it 'PUT /api/v1/users' do
-    sign_in!
-    expect_status(200)
-    expect(@user.avatar.url).to include('one.jpg')
+      it_behaves_like 'respond with', 204
+      it 'renders new nickname' do
+        expect(user.reload.nickname).to eq(params[:nickname])
+      end
+    end
 
-    params = {
-      avatar: Rails.root.join('spec', 'support', 'two.jpg')
-    }
-    put "api/v1/users/#{@user.id}", params, @headers
-    expect_status(204)
-    expect(@user.reload.avatar.url).to include('two.jpg')
-  end
+    context 'with spaces' do
+      let(:params) { {nickname: 'Space Cowboy'} }
 
-  it 'doesn\'t update user when you send txt file as avatar' do
-    params = {
-      avatar: Rails.root.join('spec', 'support', 'mailer.txt')
-    }
-    sign_in!
-    expect_status(200)
-    put "api/v1/users/#{@user.id}", params, @headers
-    expect(@user.avatar.url).to include('one.jpg')
-  end
+      it_behaves_like 'respond with', 422
+      it 'renders error' do
+        expect(json[:errors][:nickname]).to eq(['is invalid'])
+      end
+    end
 
-  it 'can update nickname' do
-    sign_in!
-    expect_status(200)
-    put "api/v1/users/#{@user.id}", { nickname: 'dude' }, @headers
-    expect_status(204)
-    expect(@user.reload.nickname).to eq('dude')
-  end
+    context 'not unique' do
+      let(:params) { {nickname: second_user.nickname} }
 
-  it 'will not update invalid nickname' do
-    sign_in!
-    expect_status(200)
-    put "api/v1/users/#{@user.id}", { nickname: 'chuck norris' }, @headers
-    expect_status(422)
-    expect(json['errors']['nickname']).to eq(['is invalid'])
-  end
+      it_behaves_like 'respond with', 422
+      it 'renders error' do
+        expect(json[:errors][:nickname]).to eq(['Already in use'])
+      end
+    end
 
-  it 'will not update not unique nickname' do
-    User.create(
-      email: Faker::Internet.email,
-      password: Faker::Internet.password(10, 20),
-      nickname: 'chuck_norris'
-    )
-    sign_in!
-    expect_status(200)
-    put "api/v1/users/#{@user.id}", { nickname: 'chuck_norris' }, @headers
-    expect_status(422)
-    expect(json['errors']['nickname']).to eq(['Already in use'])
+    context 'same as it was' do
+      let(:params) { {nickname: user.nickname} }
 
-  end
-
-  it 'will not render 422 if change nickname to same nickname' do
-    sign_in!
-    expect_status(200)
-    put "api/v1/users/#{@user.id}", { nickname: 'creator' }, @headers
-    expect_status(204)
+      it_behaves_like 'respond with', 204
+    end
   end
 end
