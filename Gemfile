@@ -36,7 +36,7 @@ group :test do
   gem 'database_cleaner', '~>1.6.1'
   gem 'faker', branch: 'master' , git: 'https://github.com/stympy/faker.git'
   gem 'shoulda-matchers', '~> 3.0'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'rspec-sidekiq'
   gem 'wisper-rspec', require: false # testing rectify::command
   gem 'rspec_api_documentation'

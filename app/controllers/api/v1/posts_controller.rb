@@ -1,8 +1,9 @@
 class Api::V1::PostsController < ApiController
+  skip_before_action :authenticate_request, except: :create
 
   def create
     Post::Command::Create.call(params.merge user: current_user) do
-      on(:ok) { |presenter| render json: presenter.to_json }
+      on(:ok) { |presenter| render status: 201, json: presenter.to_json }
       on(:invalid) { |errors| render status: 422, json: {errors: errors} }
     end
   end

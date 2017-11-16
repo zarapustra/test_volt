@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :user do
     nickname { Faker::Name.first_name.downcase }
     email { Faker::Internet.email.downcase }
