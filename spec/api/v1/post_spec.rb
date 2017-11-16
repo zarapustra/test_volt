@@ -18,16 +18,16 @@ describe Api::V1::PostsController, type: :request do
         expect(json[:author_nickname]).to eq(user.nickname)
       end
       it 'renders current time at published_at' do
-        expect(Time.parse(json[:published_at] + ' UTC')).to be_within(2.second).of Time.now.utc
+        expect(json[:published_at].to_time).to be_within(5.second).of Time.now
       end
     end
 
     context 'when time is sent' do
-      let(:time) { 1.year.ago.to_formatted_s(:datetime) }
+      let(:params) { attributes_for :post_old }
 
       it_behaves_like 'respond with', 201
       it 'renders it' do
-        expect(Time.parse(json[:published_at] + ' UTC')).to be_within(2.second).of time.utc
+        expect(json[:published_at].to_time).to be_within(5.second).of params[:published_at].to_time
       end
     end
 
@@ -56,7 +56,7 @@ describe Api::V1::PostsController, type: :request do
     before { get "/api/v1/posts/#{id}" }
 
     context 'when existed' do
-      let(:post) { create(:post_month_old) }
+      let(:post) { create(:post_old) }
       let(:id) { post.id }
       let(:expected_json) do
         {

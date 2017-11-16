@@ -5,8 +5,8 @@ FactoryBot.define do
     published_at Time.now
     user
 
-    factory :post_month_old do
-      published_at 1.year.month
+    factory :old_post do
+      published_at 1.month.ago
     end
   end
 end
