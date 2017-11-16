@@ -12,7 +12,6 @@ module RequestHelper
   def headers(user)
     @headers ||=
       {
-        'UTC-OFFSET' => 60,
         'Authenticate' => "Token #{token!(user)}"
       }
   end

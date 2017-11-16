@@ -27,7 +27,7 @@ describe Api::V1::UsersController, type: :request do
         password: attributes_for(:user)[:password]
       }
     end
-    before { post '/api/v1/sign_in', params, format: :json }
+    before { post '/api/v1/sign_in', params, { 'UTC-OFFSET' => 360 }}
 
     it_behaves_like 'respond with', 200
     it 'renders valid token' do
@@ -36,6 +36,7 @@ describe Api::V1::UsersController, type: :request do
 
     # TODO not found
     # TODO form errors
+    # TODO offset
   end
 
   describe 'PUT /api/v1/users' do
