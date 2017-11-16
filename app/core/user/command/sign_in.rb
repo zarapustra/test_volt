@@ -27,7 +27,7 @@ class User::Command::SignIn < Rectify::Command
     @_token ||= JsonWebToken.encode(user_id: user.id)
   rescue => e
     @msg_error = "Error, encrypting token: #{e.message}"
-    nil
+    false
   end
 
   def update_time_zone!
@@ -36,6 +36,6 @@ class User::Command::SignIn < Rectify::Command
     user.update_column(:time_zone, ActiveSupport::TimeZone[hours])
   rescue => e
     @msg_error = "Error, updating offset: #{e.message}"
-    nil
+    false
   end
 end
