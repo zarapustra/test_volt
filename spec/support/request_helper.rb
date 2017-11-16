@@ -12,7 +12,7 @@ module RequestHelper
   def headers(user)
     @headers ||=
       {
-        'X-LOCALTIME' => Time.now.utc.change(offset: '+0300'),
+        'UTC-OFFSET' => 60,
         'Authenticate' => "Token #{token!(user)}"
       }
   end

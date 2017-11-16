@@ -9,7 +9,7 @@ class User::Command::SignIn < Rectify::Command
   def call
     return broadcast(:not_found) unless @user
     return broadcast(:invalid, form.errors) if form.invalid?
-    update_time_offset!
+    update_time_zone!
     return broadcast(:ok, token) if token
     broadcast(:error, @msg_error)
   end
@@ -30,16 +30,10 @@ class User::Command::SignIn < Rectify::Command
     nil
   end
 
-  def update_time_offset!
-    time_offset_string = request.headers['X-Localtime'] || ''
-    offset = parse_local_time_offset(time_offset_string)
-    hours = val.to_i / 60
-    if hours < -12 || hours > 14
-      Rails.logger.warn "got #{offset} minutes offset for #{self}, reset to 0"
-      val = 0
-    end
-    profile.try!(:offset_minutes=, val)
-    profile.try!(:save!)
+  def update_time_zone!
+    hours = headers['UTC-OFFSET'].to_i / 60
+    hours = 'UTC' if hours < -11 || hours > 13
+d    user.update_column(:time_zone, ActiveSupport::TimeZone[hours])
   rescue => e
     @msg_error = "Error, updating offset: #{e.message}"
     nil
