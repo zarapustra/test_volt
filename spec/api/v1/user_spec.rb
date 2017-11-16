@@ -2,6 +2,8 @@ require 'rails_helper'
 require Rails.root.join('spec', 'api', 'v1', 'shared_examples', 'respond_with.rb')
 
 describe Api::V1::UsersController, type: :request do
+
+#------------------ SIGNUP --------------------------#
   describe 'POST /api/v1/sign_up' do
     before { post '/api/v1/sign_up', params }
 
@@ -18,7 +20,9 @@ describe Api::V1::UsersController, type: :request do
       #
     end
   end
+#------------------ /SIGNUP --------------------------#
 
+#------------------ SIGNIN --------------------------#
   describe 'POST /api/v1/sign_in' do
     let(:user) { create(:user) }
     let(:params) do
@@ -38,7 +42,9 @@ describe Api::V1::UsersController, type: :request do
     # TODO form errors
     # TODO offset
   end
+#------------------ /SIGNIN --------------------------#
 
+#------------------ UPDATE --------------------------#
   describe 'PUT /api/v1/users' do
     let(:user) { create(:user) }
     let(:second_user) { create(:user) }
