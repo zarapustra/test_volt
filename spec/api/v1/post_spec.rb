@@ -23,7 +23,7 @@ describe Api::V1::PostsController, type: :request do
     end
 
     context 'when time is sent' do
-      let(:params) { attributes_for :post_old }
+      let(:params) { attributes_for :old_post }
 
       it_behaves_like 'respond with', 201
       it 'renders it' do
@@ -56,14 +56,14 @@ describe Api::V1::PostsController, type: :request do
     before { get "/api/v1/posts/#{id}" }
 
     context 'when existed' do
-      let(:post) { create(:post_old) }
+      let(:post) { create(:old_post) }
       let(:id) { post.id }
       let(:expected_json) do
         {
           title: post.title,
           body: post.body,
-          published_at: post.published_at,
-          author_nickname: post.author_nickname
+          published_at: post.published_at.in_time_zone(user.time_zone).to_formatted_s(:datetime),
+          author_nickname: post.user.nickname
         }
       end
 
@@ -78,7 +78,7 @@ describe Api::V1::PostsController, type: :request do
 
       it_behaves_like 'respond with', 404
       it 'renders nothing' do
-        expect(json).to eq('')
+        expect(last_response.body).to eq(' ')
       end
     end
   end
@@ -86,14 +86,14 @@ describe Api::V1::PostsController, type: :request do
 
 #------------------ INDEX --------------------------#
   describe 'GET posts' do
-    let(:expected_per) { 2 }
-    let(:amount) { 5 }
-    let(:posts) { amount.times { create(:post) } }
+    let(:per) { 2 }
     let(:page) { 2 }
-    before { get '/api/v1/posts', {per: expected_per, page: page} }
+    let(:amount) { 5 }
+    let!(:posts) { amount.times.map { create(:post) }}
+    before { get '/api/v1/posts', { per: per, page: page }}
 
     it 'renders valid amount per page' do
-      expect(json.size).to eq(posts.size)
+      expect(json.size).to eq(per)
     end
 
     it 'renders valid page' do
