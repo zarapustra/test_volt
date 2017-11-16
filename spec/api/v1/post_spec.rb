@@ -1,58 +1,96 @@
 require 'rails_helper'
-describe Api::V1::UsersController, type: :request do
+require Rails.root.join('spec', 'api', 'v1', 'shared_examples', 'respond_with.rb')
+
+describe Api::V1::PostsController, type: :request do
   let(:url) { '/api/v1/posts' }
   let(:user) { create(:user) }
 
+
+#------------------ CREATE --------------------------#
+
   describe 'POST api/v1/posts/1' do
-    let(:params) {{ title: Faker::Lorem.sentence, body: Faker::Lorem.paragraph } }
+    let(:params) { {title: Faker::Lorem.sentence, body: Faker::Lorem.paragraph} }
 
     before { post url, params, headers(user) }
 
     context 'when all params valid' do
-      binding.pry
-      expect(json[:title]).to eq(params[:title])
-      expect(json[:body]).to eq(params[:body])
-      expect(json[:author_nickname]).to eq(@user.nickname)
-      expect(json[:published_at]).to eq(now)
+      let(:now) { Time.current.to_formatted_s(:datetime) }
+      let(:expected_json) do
+        {
+          title: params[:title],
+          body: params[:body],
+          published_at: now,
+          author_nickname: user.nickname
+        }
+      end
+
+      it_behaves_like 'respond with', 201
+      it 'renders them' do
+        expect(json.except(:id)).to eq(expected_json)
+      end
+      it 'renders current time at published_at' do
+        expect(json[:published_at]).to eq(now)
+      end
+
+      it 'can get '
     end
 
     context 'when time is sent' do
-      let(:now) { Time.current.to_formatted_s(:datetime) }
+      let(:time) { 1.year.ago.to_formatted_s(:datetime) }
 
-      it 'renders current time at published_at' do
-        expect(json[:title]).to eq(params[:title])
-        expect(json[:body]).to eq(params[:body])
-        expect(json[:author_nickname]).to eq(@user.nickname)
-        expect(json[:published_at]).to eq(now)
+      it_behaves_like 'respond with', 201
+      it 'renders it' do
+        expect(json.except(:id)).to eq(time)
       end
     end
+    context 'when invalid params is' do
+      context 'title' do
+        let(:params) { params.merge(title: '') }
 
-    context 'when time '
+        it_behaves_like 'respond with', 422
+        it 'renders error for title' do
+          expect(json[:errors][:title]).to eq(['can\'t be blank'])
+        end
+      end
 
-    it 'create post WITH time sent' do
-      time = 1.year.ago.to_formatted_s(:datetime)
-      params_with_time = params.merge(published_at: time)
+      context 'body' do
+        let(:params) { params.merge(body: '') }
 
-      post url, params_with_time, headers
-      expect_status(200)
-
-      expect(json[:title]).to eq(params[:title])
-      expect(json[:body]).to eq(params[:body])
-      expect(json[:author_nickname]).to eq(nickname)
-      expect(json[:published_at]).to eq(time)
-    end
-
-    it 'return errors if form invalid' do
-      post url, {}, headers
-      expect_status(422)
-      expect(json[:errors][:title]).to eq(['can\'t be blank'])
-      expect(json[:errors][:body]).to eq(['can\'t be blank'])
+        it_behaves_like 'respond with', 422
+        it 'renders error for body' do
+          expect(json[:errors][:body]).to eq(['can\'t be blank'])
+        end
+      end
     end
   end
 
+#------------------ /CREATE --------------------------#
+#------------------  SHOW   --------------------------#
+
   describe 'GET /posts/:id' do
+    let(:post) { create(:post_month_old) }
+    let(:expected_json) do
+      {
+        title: post.title,
+        body: post.body,
+        published_at: post.published_at,
+        author_nickname: post.author_nickname
+      }
+    end
+    before { get "/api/v1/posts/#{post.id}" }
+
+    context 'when existed' do
+      it_behaves_like 'respond with', 200
+      it 'renders post json' do
+        expect(json.except(:id)).to eq(expected_json)
+      end
+    end
+
+    context 'when non existed' do
+      let(:post) { nil }
+
+    end
     it 'shows existed post' do
-      sign_in!
       Post::Command::Create.call(title: 'GET /posts/:id', body: 'body', user: @user) do
         on(:ok) do |presenter|
           post = presenter.post
@@ -67,7 +105,6 @@ describe Api::V1::UsersController, type: :request do
     end
 
     it 'shows 404 when post non existed' do
-      get '/api/v1/posts/2', nil, headers
       expect_status(404)
     end
   end

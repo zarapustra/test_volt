@@ -5,8 +5,8 @@ FactoryGirl.define do
     published_at Time.current.to_formatted_s(:datetime)
     user_id 1
 
-    factory :post_year_old do
-      published_at 1.year.ago.to_formatted_s(:datetime)
+    factory :post_month_old do
+      published_at 1.year.month.to_formatted_s(:datetime)
     end
   end
 end
