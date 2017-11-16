@@ -33,6 +33,9 @@ describe Api::V1::UsersController, type: :request do
     it 'renders valid token' do
       expect(json[:auth_token]).to eq(token! user)
     end
+
+    # TODO not found
+    # TODO form errors
   end
 
   describe 'PUT /api/v1/users' do

@@ -15,9 +15,10 @@ class Api::V1::UsersController < ApiController
   def sign_in
     User::Command::SignIn.call(params) do
       on(:ok) { |token| render json: {auth_token: token} }
+      on(:invalid) { |errors| render status: 401, json: { errors: errors }}
       on(:error) do |msg|
         logger.error(msg)
-        render status: 401
+        render status: 500
       end
     end
   end
