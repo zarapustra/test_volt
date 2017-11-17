@@ -22,4 +22,8 @@ RSpec.configure do |config|
 
   config.include Wisper::RSpec::BroadcastMatcher, type: :command
 
+  # clean up carrierwave
+  config.after(:each) do
+      FileUtils.rm_rf(Dir["#{Rails.root}/spec/support/uploads"])
+  end
 end
