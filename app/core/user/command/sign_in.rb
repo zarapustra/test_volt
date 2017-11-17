@@ -10,7 +10,7 @@ class User::Command::SignIn < Rectify::Command
     return broadcast(:not_found) unless @user
     return broadcast(:invalid, form.errors) if form.invalid?
     update_time_zone!
-    return broadcast(:ok, token) if token
+    return broadcast(:ok, @user, token) if token
     broadcast(:error, @msg_error)
   end
 

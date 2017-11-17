@@ -18,7 +18,7 @@ describe Api::V1::PostsController, type: :request do
         expect(json[:author_nickname]).to eq(user.nickname)
       end
       it 'renders current time at published_at' do
-        expect(json[:published_at].to_time).to be_within(5.second).of Time.now
+        expect(json[:published_at].to_time).to be_within(10.second).of Time.now
       end
     end
 
