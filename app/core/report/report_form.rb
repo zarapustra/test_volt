@@ -3,37 +3,25 @@ class Report::ReportForm < Rectify::Form
   attribute :end_date, Date
   attribute :email, String
 
-  validates :email, :start_date, :end_date, :presence => true
+  validates :email, :presence => true
   validate :dates_valid?
 
   private
 
   def dates_valid?
-    start_date.present? &&
-      end_date.present? &&
-      start_date_is_date? &&
-      end_date_is_date? &&
-      end_date_is_later?
+    start_date_is_valid? || end_date_is_valid? ||
+       end_date_is_later?
   end
 
-  def start_date_is_date?
-    Date.parse(start_date)
-  rescue ArgumentError
-    errors.add(:start_date, 'is not valid date')
-    false
+  def start_date_is_valid?
+    errors.add(:start_date, 'invalid') unless start_date.is_a?(Date)
   end
 
-  def end_date_is_date?
-    Date.parse(end_date)
-  rescue ArgumentError
-    errors.add(:end_date, 'is not valid date')
-    false
+  def end_date_is_valid?
+    errors.add(:end_date, 'invalid') unless end_date.is_a?(Date)
   end
 
   def end_date_is_later?
-    start_date <= end_date
-  rescue false
-    errors.add(:dates, 'Start date is later than end date')
-    false
+    errors.add(:dates, 'Start date is later than end date') unless start_date <= end_date
   end
 end

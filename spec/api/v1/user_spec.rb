@@ -1,5 +1,5 @@
 require 'rails_helper'
-require Rails.root.join('spec', 'api', 'v1', 'shared_examples', 'respond_with.rb')
+require Rails.root.join('spec', 'api', 'v1', 'shared_examples', 'responds_with.rb')
 
 describe Api::V1::UsersController, type: :request do
 
@@ -10,7 +10,7 @@ describe Api::V1::UsersController, type: :request do
     context 'when params are valid' do
       let(:params) { attributes_for(:user) }
 
-      it_behaves_like 'respond with', 201
+      it_behaves_like 'responds with', 201
       it 'creates a user' do
         expect(User.count).to eq(1)
       end
@@ -33,7 +33,7 @@ describe Api::V1::UsersController, type: :request do
     end
     before { post '/api/v1/sign_in', params, { 'UTC-OFFSET' => 360 }}
 
-    it_behaves_like 'respond with', 200
+    it_behaves_like 'responds with', 200
     it 'renders valid token' do
       expect(json[:auth_token]).to eq(token! user)
     end
@@ -55,7 +55,7 @@ describe Api::V1::UsersController, type: :request do
       context 'valid' do
         let(:params) { {avatar: Rails.root.join('spec', 'support', 'two.jpg')} }
 
-        it_behaves_like 'respond with', 204
+        it_behaves_like 'responds with', 204
         it 'renders url of new image' do
           expect(user.reload.avatar.url).to include('two.jpg')
         end
@@ -74,7 +74,7 @@ describe Api::V1::UsersController, type: :request do
       context 'valid' do
         let(:params) { {nickname: 'dude'} }
 
-        it_behaves_like 'respond with', 204
+        it_behaves_like 'responds with', 204
         it 'renders new nickname' do
           expect(user.reload.nickname).to eq(params[:nickname])
         end
@@ -83,7 +83,7 @@ describe Api::V1::UsersController, type: :request do
       context 'with spaces' do
         let(:params) { {nickname: 'Space Cowboy'} }
 
-        it_behaves_like 'respond with', 422
+        it_behaves_like 'responds with', 422
         it 'renders error' do
           expect(json[:errors][:nickname]).to eq(['is invalid'])
         end
@@ -92,7 +92,7 @@ describe Api::V1::UsersController, type: :request do
       context 'not unique' do
         let(:params) { {nickname: second_user.nickname} }
 
-        it_behaves_like 'respond with', 422
+        it_behaves_like 'responds with', 422
         it 'renders error' do
           expect(json[:errors][:nickname]).to eq(['Already in use'])
         end
@@ -101,7 +101,7 @@ describe Api::V1::UsersController, type: :request do
       context 'same as it was' do
         let(:params) { {nickname: user.nickname} }
 
-        it_behaves_like 'respond with', 204
+        it_behaves_like 'responds with', 204
       end
     end
   end

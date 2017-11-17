@@ -1,5 +1,5 @@
 require 'rails_helper'
-require Rails.root.join('spec', 'api', 'v1', 'shared_examples', 'respond_with.rb')
+require Rails.root.join('spec', 'api', 'v1', 'shared_examples', 'responds_with.rb')
 
 describe Api::V1::PostsController, type: :request do
   let(:url) { '/api/v1/posts' }
@@ -11,7 +11,7 @@ describe Api::V1::PostsController, type: :request do
     before { post url, params, headers(user) }
 
     context 'when all params valid' do
-      it_behaves_like 'respond with', 201
+      it_behaves_like 'responds with', 201
       it 'renders params' do
         expect(json[:title]).to eq(params[:title])
         expect(json[:body]).to eq(params[:body])
@@ -25,7 +25,7 @@ describe Api::V1::PostsController, type: :request do
     context 'when time is sent' do
       let(:params) { attributes_for :old_post }
 
-      it_behaves_like 'respond with', 201
+      it_behaves_like 'responds with', 201
       it 'renders it' do
         expect(json[:published_at].to_time).to be_within(5.second).of params[:published_at].to_time
       end
@@ -34,7 +34,7 @@ describe Api::V1::PostsController, type: :request do
     context 'when title is empty' do
       let(:params) { attributes_for(:post).merge(title: '') }
 
-      it_behaves_like 'respond with', 422
+      it_behaves_like 'responds with', 422
       it 'renders error for title' do
         expect(json[:errors][:title]).to eq(['can\'t be blank'])
       end
@@ -43,7 +43,7 @@ describe Api::V1::PostsController, type: :request do
     context 'when body is empty' do
       let(:params) { attributes_for(:post).merge(body: '') }
 
-      it_behaves_like 'respond with', 422
+      it_behaves_like 'responds with', 422
       it 'renders error for body' do
         expect(json[:errors][:body]).to eq(['can\'t be blank'])
       end
@@ -67,7 +67,7 @@ describe Api::V1::PostsController, type: :request do
         }
       end
 
-      it_behaves_like 'respond with', 200
+      it_behaves_like 'responds with', 200
       it 'renders post json' do
         expect(json.except(:id)).to eq(expected_json)
       end
@@ -76,7 +76,7 @@ describe Api::V1::PostsController, type: :request do
     context 'when non existed' do
       let(:id) { 404 }
 
-      it_behaves_like 'respond with', 404
+      it_behaves_like 'responds with', 404
       it 'renders nothing' do
         expect(last_response.body).to eq(' ')
       end
