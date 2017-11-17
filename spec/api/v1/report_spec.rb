@@ -1,75 +1,98 @@
 require 'rails_helper'
 require 'sidekiq/testing'
+require Rails.root.join('spec', 'api', 'v1', 'shared_examples', 'blank_message')
 
 describe Api::V1::ReportsController, type: :request do
   describe 'GET /api/v1/reports/by_author' do
+    let(:today) { Date.today.to_s }
+    let(:tomorrow) { Date.tomorrow.to_s }
+    let(:start_date) { today }
+    let(:end_date) { tomorrow }
+    let(:email) { 'reports@example.com' }
+    let(:params) do
+      {
+        start_date: start_date,
+        end_date: end_date,
+        email: email
+      }
+    end
     let(:url) { '/api/v1/reports/by_author' }
     let(:user) { create(:user) }
-
     before { get url, params, headers(user) }
 
     context 'when all params are valid' do
-      let(:params) do
-        {
-          start_date: Date.today.to_s,
-          end_date: Date.tomorrow.to_s,
-          email: 'reports@example.com'
-        }
-      end
-      it 'sends email with report when params are valid' do
-        params =
-        get url, params, headers
 
-        expect_status(200)
+      it_behaves_like 'respond with', 200
+      it 'renders specific message' do
         expect(json[:message]).to eq('Report generation started')
+      end
+      it 'enqueues generating job' do
         expect(Report::ByAuthorWorker).to have_enqueued_sidekiq_job(params)
+      end
+
+      # TODO move this example to corresponding_sidekiq_worker_spec
+      it 'enqueues mailer job' do
         Report::ByAuthorWorker.drain
         expect(Sidekiq::Extensions::DelayedMailer.jobs.size).to eq(1)
       end
     end
 
-    it 'renders errors when start_date is later than end_date' do
-      params = {
-        start_date: Date.tomorrow.to_s,
-        end_date: Date.today.to_s,
-        email: 'reports@example.com'
-      }
-      get url, params, headers
-      expect_status(422)
-      expect(json[:errors][:dates]).to eq(['Start date is later than end date'])
+    context 'when start_date is' do
+      context 'later than end_date' do
+        let(:start_date) { tomorrow }
+        let(:end_date) { today }
+
+        it_behaves_like 'respond with', 422
+        it 'renders error' do
+          expect(json[:errors][:dates]).to eq(['Start date is later than end date'])
+        end
+      end
+
+      context 'nil' do
+        let(:start_date) { nil }
+
+        it_behaves_like 'respond with', 422
+        it_behaves_like 'renders blank error message', :start_date
+      end
+
+      context 'not date' do
+        let(:start_date) { ' ' }
+
+        it_behaves_like 'respond with', 422
+        # TODO
+      end
     end
 
-    it 'renders errors when email is empty' do
-      params = {
-        start_date: Date.today.to_s,
-        end_date: Date.tomorrow.to_s,
-        email: ''
-      }
-      get url, params, headers
-      expect_status(422)
-      expect(json[:errors][:email]).to eq(['can\'t be blank'])
+    context 'when end_date is' do
+      context 'nil' do
+        let(:start_date) { nil }
+
+        it_behaves_like 'respond with', 422
+        it_behaves_like 'renders blank error message', :end_date
+      end
+
+      context 'not date' do
+        let(:start_date) { ' ' }
+
+        it_behaves_like 'respond with', 422
+        # TODO
+      end
     end
 
-    it 'renders errors when start_date is empty' do
-      params = {
-        start_date: '',
-        end_date: Date.tomorrow.to_s,
-        email: 'reports@example.com'
-      }
-      get url, params, headers
-      expect_status(422)
-      expect(json[:errors][:start_date]).to eq(['can\'t be blank'])
-    end
+    context 'when email is' do
+      context 'nil' do
+        let(:email) { nil }
 
-    it 'renders errors when start_date is empty' do
-      params = {
-        start_date: Date.today.to_s,
-        end_date: '',
-        email: 'reports@example.com'
-      }
-      get url, params, headers
-      expect_status(422)
-      expect(json[:errors][:end_date]).to eq(['can\'t be blank'])
+        it_behaves_like 'respond with', 422
+        it_behaves_like 'renders blank error message', :email
+      end
+
+      context 'not email' do
+        let(:email) { ' ' }
+
+        it_behaves_like 'respond with', 422
+        # TODO
+      end
     end
   end
 end
