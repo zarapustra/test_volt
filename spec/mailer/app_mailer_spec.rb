@@ -9,6 +9,7 @@ describe Mailer do
       expect(Sidekiq::Extensions::DelayedMailer.jobs.size).to eq(1)
     end
   end
+
   describe 'when send immediately' do
     let(:mail) { Mailer.send_file(to, 'mailer.txt', 'spec/support/mailer.txt') }
 

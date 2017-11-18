@@ -5,7 +5,8 @@ describe Api::V1::UsersController, type: :request do
 
 #------------------ SIGNUP --------------------------#
   describe 'POST /api/v1/sign_up' do
-    before { post '/api/v1/sign_up', params }
+    before {
+      post '/api/v1/sign_up', params }
 
     context 'when params are valid' do
       let(:params) { attributes_for(:user) }

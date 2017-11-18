@@ -30,12 +30,6 @@ describe 'GET /api/v1/reports/by_author', type: :request do
     it 'enqueues generating job' do
       expect(Report::ByAuthorWorker).to have_enqueued_sidekiq_job(params)
     end
-
-    # TODO move this example to corresponding_sidekiq_worker_spec
-    it 'enqueues mailer job' do
-      Report::ByAuthorWorker.drain
-      expect(Sidekiq::Extensions::DelayedMailer.jobs.size).to eq(1)
-    end
   end
 
   context 'when start_date is' do
