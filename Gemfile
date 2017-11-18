@@ -17,7 +17,7 @@ gem 'jwt'
 gem 'multi_json'
 gem 'kaminari'
 gem 'sidekiq'
-
+gem 'pundit'
 gem 'carrierwave'
 gem 'mini_magick'
 
@@ -51,22 +51,10 @@ group :development, :test do
 end
 
 =begin
-gem 'simple_command'
-gem 'trailblazer', '>= 2.0.3'
-gem 'trailblazer-rails'
-gem 'trailblazer-cells'
-gem 'cells-rails'
-gem 'cells-slim'
-gem 'responders'
-gem 'reform'
-gem 'reform-rails'
-gem 'roar-rails'
-# gem 'roar'
-gem 'roar-jsonapi'
-gem 'authlogic'
-gem 'tyrant'
-gem 'pundit'
+
 gem 'dry-validation'
 gem 'active_model_serializers', '~> 0.10.0'
 gem 'jsonapi-resources'
+gem 'email_validator'
+
 =end
