@@ -10,6 +10,7 @@ module RequestHelper
   end
 
   def headers(user)
+    return nil unless user.present?
     @headers ||=
       {
         'Authenticate' => "Token #{token!(user)}"

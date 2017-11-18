@@ -8,44 +8,54 @@ describe Api::V1::PostsController, type: :request do
 #------------------ CREATE --------------------------#
   describe 'POST api/v1/posts/1' do
     let(:params) { attributes_for(:post) }
-    before { post url, params, headers(user) }
-
-    context 'when all params valid' do
-      it_behaves_like 'responds with', 201
-      it 'renders params' do
-        expect(json[:title]).to eq(params[:title])
-        expect(json[:body]).to eq(params[:body])
-        expect(json[:author_nickname]).to eq(user.nickname)
+    context 'when is_client &' do
+      before { post url, params, headers(user) }
+      context 'all params are valid' do
+        it_behaves_like 'responds with', 201
+        it 'renders params' do
+          expect(json[:title]).to eq(params[:title])
+          expect(json[:body]).to eq(params[:body])
+          expect(json[:author_nickname]).to eq(user.nickname)
+        end
+        it 'renders current time at published_at' do
+          expect(json[:published_at].to_time).to be_within(10.second).of Time.now
+        end
       end
-      it 'renders current time at published_at' do
-        expect(json[:published_at].to_time).to be_within(10.second).of Time.now
+
+      context 'when time is sent' do
+        let(:params) { attributes_for :old_post }
+
+        it_behaves_like 'responds with', 201
+        it 'renders it' do
+          expect(json[:published_at].to_time).to be_within(5.second).of params[:published_at].to_time
+        end
+      end
+
+      context 'when title is empty' do
+        let(:params) { attributes_for(:post).merge(title: '') }
+
+        it_behaves_like 'responds with', 422
+        it 'renders error for title' do
+          expect(json[:errors][:title]).to eq(['can\'t be blank'])
+        end
+      end
+
+      context 'when body is empty' do
+        let(:params) { attributes_for(:post).merge(body: '') }
+
+        it_behaves_like 'responds with', 422
+        it 'renders error for body' do
+          expect(json[:errors][:body]).to eq(['can\'t be blank'])
+        end
       end
     end
-
-    context 'when time is sent' do
-      let(:params) { attributes_for :old_post }
-
-      it_behaves_like 'responds with', 201
-      it 'renders it' do
-        expect(json[:published_at].to_time).to be_within(5.second).of params[:published_at].to_time
-      end
-    end
-
-    context 'when title is empty' do
-      let(:params) { attributes_for(:post).merge(title: '') }
-
-      it_behaves_like 'responds with', 422
-      it 'renders error for title' do
-        expect(json[:errors][:title]).to eq(['can\'t be blank'])
-      end
-    end
-
-    context 'when body is empty' do
-      let(:params) { attributes_for(:post).merge(body: '') }
-
-      it_behaves_like 'responds with', 422
-      it 'renders error for body' do
-        expect(json[:errors][:body]).to eq(['can\'t be blank'])
+    context 'when is_guest &' do
+      before { post url, params }
+      context 'all params are valid' do
+        it_behaves_like 'responds with', 401
+        it 'renders nothing' do
+          expect(last_response.body).to eq(' ')
+        end
       end
     end
   end
@@ -89,8 +99,8 @@ describe Api::V1::PostsController, type: :request do
     let(:per) { 2 }
     let(:page) { 2 }
     let(:amount) { 5 }
-    let!(:posts) { amount.times.map { create(:post) }}
-    before { get '/api/v1/posts', { per: per, page: page }}
+    let!(:posts) { amount.times.map { create(:post) } }
+    before { get '/api/v1/posts', {per: per, page: page} }
 
     it 'renders valid amount per page' do
       expect(json.size).to eq(per)

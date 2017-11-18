@@ -7,11 +7,11 @@ class UserPolicy < ApplicationPolicy
     true
   end
 
-  def update?
-    user.is_admin? || user == record
+  def show?
+    user.present? && user == record || user.is_admin?
   end
 
-  def show?
-    user.is_admin? || user == record
+  def update?
+    show?
   end
 end

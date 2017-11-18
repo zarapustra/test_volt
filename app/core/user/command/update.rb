@@ -1,14 +1,16 @@
 class User::Command::Update < ApiCommand
   attr_reader :user, :form, :msg_error
 
+  # TODO refactor
   def initialize(params = {})
     @user = User.find(params[:id])
-    authorize(@user).update?
     @form = User::Form::UpdateForm.from_params(params).with_context(user: user)
+    @current_user = params[:current_user]
     @msg_error = nil
   end
 
   def call
+    return broadcast(:unauthorized) unless authorize!
     return broadcast(:invalid, form.errors) unless user && form.valid?
     return broadcast(:error, msg_error) unless update_user!
     broadcast(:ok)
@@ -21,5 +23,9 @@ class User::Command::Update < ApiCommand
   rescue => e
     @msg_error = "Error, updating user: #{e.message}"
     false
+  end
+
+  def authorize!
+    Pundit.policy(@current_user, user)&.update?
   end
 end

@@ -5,6 +5,7 @@ FactoryBot.define do
     password 'password'
     time_zone Time.now.zone
     after :create do |u|
+      u.add_role(:client)
       u.avatar = File.open(Rails.root.join('spec', 'support', 'one.jpg'))
       u.save
     end

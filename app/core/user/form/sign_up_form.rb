@@ -12,7 +12,6 @@ class User::Form::SignUpForm < Rectify::Form
   private
 
   def before_validation
-    assign_default_role!
     assign_avatar!
     downcase_nickname!
     downcase_email!

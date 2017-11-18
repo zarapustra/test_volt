@@ -1,6 +1,9 @@
 class Report::Command::ByAuthor < ApiCommand
+  attr_reader :form
+
   def initialize(params)
-    @params = params
+    @current_user = params[:current_user]
+    @form ||= Report::ReportForm.from_params(params)
   end
 
   def call
@@ -11,13 +14,7 @@ class Report::Command::ByAuthor < ApiCommand
 
   private
 
-  attr_reader :params
-
-  def form
-    @form ||= Report::ReportForm.from_params(params)
-  end
-
   def authorize!
-    Pundit.policy(params[:user], :report)&.by_author?
+    Pundit.policy(@current_user, :report)&.by_author?
   end
 end

@@ -21,7 +21,7 @@ describe 'GET /api/v1/reports/by_author', type: :request do
   let(:user) { create(:user) }
   before { get url, params, headers(user) }
 
-  context 'when user has admin role and' do
+  context 'when is_admin &' do
     let(:user) { create(:admin) }
 
     context 'all params are valid' do
@@ -94,7 +94,18 @@ describe 'GET /api/v1/reports/by_author', type: :request do
     end
   end
 
-  context 'when user has client role' do
+  context 'when is_client' do
+    it_behaves_like 'responds with', 401
+
+    it 'renders no message' do
+      expect(last_response.body).to eq(' ')
+    end
+    it 'doesn\'t enqueue generating job' do
+      expect(Report::ByAuthorWorker).not_to have_enqueued_sidekiq_job(params)
+    end
+  end
+
+  context 'when is_guest' do
     it_behaves_like 'responds with', 401
 
     it 'renders no message' do

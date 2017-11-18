@@ -1,11 +1,12 @@
 class Post::Command::Index < ApiCommand
   def initialize(params)
-    authorize(:post).index?
+    @current_user = params[:current_user]
     @per = params[:per]
     @page = params[:page]
   end
 
   def call
+    return broadcast(:unauthorized) unless authorize!
     broadcast(:ok, json, total_pages, total_posts)
   end
 
@@ -18,14 +19,22 @@ class Post::Command::Index < ApiCommand
   end
 
   def models
-    Post.page(@page).per(@per)
+    scope&.page(@page)&.per(@per)
   end
 
   def total_pages
-    Post.page(1).per(@per).total_pages
+    scope.page(1).per(@per).total_pages
   end
 
   def total_posts
-    Post.count
+    scope.count
+  end
+
+  def scope
+    @scope ||= Pundit.policy_scope(@current_user, Post)
+  end
+
+  def authorize!
+    Pundit.policy(@current_user, :post)&.index?
   end
 end
