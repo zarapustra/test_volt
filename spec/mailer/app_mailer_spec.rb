@@ -3,14 +3,15 @@ require 'rails_helper'
 describe Mailer do
   to = 'test@example.com'
   
-  describe 'when send with delay' do
-    it 'can send with delay' do
-      mail = Mailer.delay.send_file(to, 'mailer.txt', 'spec/support/mailer.txt')
+  context 'when called with delay' do
+    before { Mailer.delay.send_file(to, 'mailer.txt', 'spec/support/mailer.txt') }
+
+    it 'is being enqueued' do
       expect(Sidekiq::Extensions::DelayedMailer.jobs.size).to eq(1)
     end
   end
 
-  describe 'when send immediately' do
+  context 'when called withou delay' do
     let(:mail) { Mailer.send_file(to, 'mailer.txt', 'spec/support/mailer.txt') }
 
     it 'renders the headers' do
@@ -25,7 +26,7 @@ describe Mailer do
       expect(attachment.filename).to eq('mailer.txt')
     end
 
-    it 'not delayed' do
+    it 'is not being enqueued' do
       expect(Sidekiq::Extensions::DelayedMailer.jobs.size).to eq(0)
     end
   end
