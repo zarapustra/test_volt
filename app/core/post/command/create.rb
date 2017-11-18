@@ -1,7 +1,8 @@
-class Post::Command::Create < Rectify::Command
+class Post::Command::Create < ApiCommand
   attr_reader :form
 
   def initialize(params)
+    authorize(:post).create?
     @form = Post::PostForm.from_params(params)
   end
 

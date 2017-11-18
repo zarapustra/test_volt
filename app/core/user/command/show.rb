@@ -1,8 +1,9 @@
-class User::Command::Show < Rectify::Command
+class User::Command::Show < ApiCommand
   attr_reader :user
 
   def initialize(params)
     @user ||= User.find_by(id: params[:id])
+    authorize(@user).show?
   end
 
   def call

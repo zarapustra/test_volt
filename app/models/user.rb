@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  rolify
   has_secure_password
   has_secure_token
   mount_uploader :avatar, AvatarUploader

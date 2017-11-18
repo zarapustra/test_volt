@@ -1,5 +1,6 @@
-class Post::Command::Index < Rectify::Command
+class Post::Command::Index < ApiCommand
   def initialize(params)
+    authorize(:post).index?
     @per = params[:per]
     @page = params[:page]
   end

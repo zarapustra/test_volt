@@ -1,7 +1,8 @@
-class Post::Command::Show < Rectify::Command
+class Post::Command::Show < ApiCommand
   attr_reader :post
 
   def initialize(params)
+    authorize(:post).index?
     @post ||= Post.find_by(id: params[:id])
   end
 

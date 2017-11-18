@@ -1,23 +1,31 @@
-class User::Command::SignUp < Rectify::Command
+class User::Command::SignUp < ApiCommand
   attr_reader :form, :msg_error
 
   def initialize(params = {})
+    authorize(:user).sign_up?
     @form = User::Form::SignUpForm.from_params(params)
     @msg_error = nil
   end
 
   def call
     return broadcast(:invalid, form.errors) unless form.valid?
-    return broadcast(:error, msg_error) unless user
+    return broadcast(:error, msg_error) unless user && assign_default_role!
     broadcast(:ok)
   end
 
   private
 
   def user
-    User.create(form.attributes)
+    @user ||= User.create(form.attributes)
   rescue => e
-    @msg_error = "Error, creating user: #{e.message}"
+    @msg_error = "Creating user: #{e.message}"
+    false
+  end
+
+  def assign_default_role!
+    @user.add_role :client
+  rescue => e
+    @msg_error = "Adding :client role to user: #{e.message}, user_id: #{@user.id}"
     false
   end
 end

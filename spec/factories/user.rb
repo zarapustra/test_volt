@@ -8,5 +8,11 @@ FactoryBot.define do
       u.avatar = File.open(Rails.root.join('spec', 'support', 'one.jpg'))
       u.save
     end
+
+    factory :admin do
+      after :create do |u|
+        u.add_role(:admin)
+      end
+    end
   end
 end

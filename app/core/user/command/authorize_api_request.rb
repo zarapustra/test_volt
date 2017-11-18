@@ -1,4 +1,4 @@
-class User::Command::AuthorizeApiRequest < Rectify::Command
+class User::Command::AuthorizeApiRequest < ApiCommand
   def initialize(request)
     @headers = request.env
   end

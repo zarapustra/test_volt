@@ -1,4 +1,4 @@
-class User::Command::UpdateUtcOffset < Rectify::Command
+class User::Command::UpdateUtcOffset < ApiCommand
 
   def initialize(params = {})
     @user = params[:user]

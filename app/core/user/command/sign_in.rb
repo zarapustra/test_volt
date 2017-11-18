@@ -1,8 +1,9 @@
-class User::Command::SignIn < Rectify::Command
+class User::Command::SignIn < ApiCommand
 
   def initialize(params = {})
     @params = params
     @user = User.find_by(email: params[:email])
+    authorize(@user).sign_in?
     @msg_error = ''
   end
 

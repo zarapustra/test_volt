@@ -21,72 +21,87 @@ describe 'GET /api/v1/reports/by_author', type: :request do
   let(:user) { create(:user) }
   before { get url, params, headers(user) }
 
-  context 'when all params are valid' do
+  context 'when user has admin role and' do
+    let(:user) { create(:admin) }
 
-    it_behaves_like 'responds with', 200
-    it 'renders specific message' do
-      expect(json[:message]).to eq('Report generation started')
-    end
-    it 'enqueues generating job' do
-      expect(Report::ByAuthorWorker).to have_enqueued_sidekiq_job(params)
-    end
-  end
-
-  context 'when start_date is' do
-    context 'later than end_date' do
-      let(:start_date) { tomorrow }
-      let(:end_date) { today }
-
-      it_behaves_like 'responds with', 422
-      it 'renders error' do
-        expect(json[:errors][:dates]).to eq(['Start date is later than end date'])
+    context 'all params are valid' do
+      it_behaves_like 'responds with', 200
+      it 'renders specific message' do
+        expect(json[:message]).to eq('Report generation started')
+      end
+      it 'enqueues generating job' do
+        expect(Report::ByAuthorWorker).to have_enqueued_sidekiq_job(params)
       end
     end
 
-    context 'nil' do
-      let(:start_date) { nil }
+    context 'start_date is' do
+      context 'later than end_date' do
+        let(:start_date) { tomorrow }
+        let(:end_date) { today }
 
-      it_behaves_like 'responds with', 422
-      it_behaves_like 'renders invalid message', :start_date
+        it_behaves_like 'responds with', 422
+        it 'renders error' do
+          expect(json[:errors][:dates]).to eq(['Start date is later than end date'])
+        end
+      end
+
+      context 'nil' do
+        let(:start_date) { nil }
+
+        it_behaves_like 'responds with', 422
+        it_behaves_like 'renders invalid message', :start_date
+      end
+
+      context 'not date' do
+        let(:start_date) { 'qwerty' }
+
+        it_behaves_like 'responds with', 422
+        it_behaves_like 'renders invalid message', :start_date
+      end
     end
 
-    context 'not date' do
-      let(:start_date) { 'qwerty' }
+    context 'end_date is' do
+      context 'nil' do
+        let(:end_date) { nil }
 
-      it_behaves_like 'responds with', 422
-      it_behaves_like 'renders invalid message', :start_date
+        it_behaves_like 'responds with', 422
+        it_behaves_like 'renders invalid message', :end_date
+      end
+
+      context 'invalid date' do
+        let(:end_date) { 'qwerty' }
+
+        it_behaves_like 'responds with', 422
+        it_behaves_like 'renders invalid message', :end_date
+      end
+    end
+
+    context 'email is' do
+      context 'nil' do
+        let(:email) { nil }
+
+        it_behaves_like 'responds with', 422
+        it_behaves_like 'renders blank message', :email
+      end
+
+      context 'not valid email' do
+        let(:email) { 'qwerty' }
+
+        # TODO
+        # it_behaves_like 'responds with', 422
+        # it_behaves_like 'renders invalid message', :email
+      end
     end
   end
 
-  context 'when end_date is' do
-    context 'nil' do
-      let(:end_date) { nil }
+  context 'when user has client role' do
+    it_behaves_like 'responds with', 401
 
-      it_behaves_like 'responds with', 422
-      it_behaves_like 'renders invalid message', :end_date
+    it 'renders no message' do
+      expect(last_response.body).to eq(' ')
     end
-
-    context 'invalid date' do
-      let(:end_date) { 'qwerty' }
-
-      it_behaves_like 'responds with', 422
-      it_behaves_like 'renders invalid message', :end_date
-    end
-  end
-
-  context 'when email is' do
-    context 'nil' do
-      let(:email) { nil }
-
-      it_behaves_like 'responds with', 422
-      it_behaves_like 'renders blank message', :email
-    end
-
-    context 'not valid email' do
-      let(:email) { 'qwerty' }
-# TODO
-      #it_behaves_like 'responds with', 422
-      #it_behaves_like 'renders invalid message', :email
+    it 'doesn\'t enqueue generating job' do
+      expect(Report::ByAuthorWorker).not_to have_enqueued_sidekiq_job(params)
     end
   end
 end

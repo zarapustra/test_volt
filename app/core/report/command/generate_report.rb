@@ -1,7 +1,7 @@
 require 'csv'
 require 'zip'
 
-class Report::Command::GenerateReport < Rectify::Command
+class Report::Command::GenerateReport < ApiCommand
   attr_reader :file_name, :msg_error
 
   def initialize(params)

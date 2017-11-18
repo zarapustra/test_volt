@@ -1,8 +1,9 @@
-class User::Command::Update < Rectify::Command
+class User::Command::Update < ApiCommand
   attr_reader :user, :form, :msg_error
 
   def initialize(params = {})
     @user = User.find(params[:id])
+    authorize(@user).update?
     @form = User::Form::UpdateForm.from_params(params).with_context(user: user)
     @msg_error = nil
   end
