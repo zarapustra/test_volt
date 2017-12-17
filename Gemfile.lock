@@ -143,6 +143,7 @@ GEM
     pundit (1.1.0)
       activesupport (>= 3.0.0)
     rack (2.0.3)
+    rack-cors (1.0.2)
     rack-protection (2.0.0)
       rack
     rack-test (0.7.0)
@@ -265,6 +266,7 @@ DEPENDENCIES
   pry-rails
   puma (~> 3.7)
   pundit
+  rack-cors
   rails (~> 5.1.4)
   rectify
   rolify
@@ -276,6 +278,9 @@ DEPENDENCIES
   simplecov
   tzinfo-data
   wisper-rspec
+
+RUBY VERSION
+   ruby 2.4.1p111
 
 BUNDLED WITH
    1.16.0
