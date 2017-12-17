@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../bookstore-backend/.idea/bookstore-backend.iml" filepath="$PROJECT_DIR$/../bookstore-backend/.idea/bookstore-backend.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../tl/master_ruby/.idea/main.iml" filepath="$PROJECT_DIR$/../../tl/master_ruby/.idea/main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/volt.iml" filepath="$PROJECT_DIR$/.idea/volt.iml" />
     </modules>
