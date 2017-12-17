@@ -7,8 +7,6 @@ module Crypter
     encryptor.decrypt_and_verify ct
   end
 
-  def valid_password(enc_pass, pass)
-  end
   private
 
   def encryptor
