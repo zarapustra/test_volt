@@ -13,7 +13,7 @@ module RequestHelper
     return nil unless user.present?
     @headers ||=
       {
-        'Authenticate' => "Token #{token!(user)}"
+        'HTTP_AUTHORIZATION' => "Bearer #{token!(user)}"
       }
   end
 

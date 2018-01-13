@@ -3,7 +3,7 @@ class User::Command::Show < ApiCommand
 
   def initialize(params)
     @current_user = params[:current_user]
-    @user ||= User.find_by(id: params[:id])
+    @user ||= params[:id].present? ? user!(params[:id]) : @current_user
   end
 
   def call
@@ -13,6 +13,10 @@ class User::Command::Show < ApiCommand
   end
 
   private
+
+  def user!(id)
+    User.find_by_id(id)
+  end
 
   def presenter
     User::UserPresenter.new(user: user)

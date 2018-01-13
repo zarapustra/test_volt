@@ -22,11 +22,10 @@ class User::Command::AuthorizeApiRequest < ApiCommand
 
   def decoded_auth_token
     @decoded_auth_token ||=
-      http_auth_header &&
-        JsonWebToken.decode(http_auth_header)
+      token_from_header && JsonWebToken.decode(token_from_header)
   end
 
-  def http_auth_header
-    headers['Authenticate'] && headers['Authenticate'].split(' ').last
+  def token_from_header
+    headers['HTTP_AUTHORIZATION']&.split(' ')&.last
   end
 end

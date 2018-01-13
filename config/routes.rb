@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       post 'sign_in' => 'auth#sign_in'
       post 'sign_up' => 'users#sign_up'
       get 'reports/by_author' => 'reports#by_author'
+      get 'current_user' => 'users#show'
     end
   end
 end
