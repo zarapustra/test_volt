@@ -22,3 +22,4 @@ public/uploads
 .idea
 
 coverage
+secrets.yml
