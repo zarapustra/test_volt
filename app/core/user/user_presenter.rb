@@ -6,7 +6,7 @@ class User::UserPresenter < Rectify::Presenter
       id: user.id,
       nickname: user.nickname,
       email: user.email,
-      avatar: user.avatar.file&.thumb&.url
+      avatar: base_url + user.avatar&.thumb&.url
     }
   end
 end

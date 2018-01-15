@@ -14,7 +14,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
   process resize_to_fit: [300, 300]
 
   version :thumb do
-    process resize_to_fill: [100, 100]
+    process resize_to_fill: [48, 48]
   end
 
   private
@@ -28,3 +28,6 @@ class AvatarUploader < CarrierWave::Uploader::Base
     end
   end
 end
+
+# console
+# u.update_attributes(:remote_avatar_url => "https://...")
