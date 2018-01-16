@@ -15,6 +15,7 @@ class Api::V1::AuthController < ApiController
         render status: 500
       end
       on(:unauthorized) { render status: 401 }
+      on(:not_found) { render status: 404 }
     end
   end
 end
