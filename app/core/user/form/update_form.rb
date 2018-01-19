@@ -1,9 +1,10 @@
 class User::Form::UpdateForm < Rectify::Form
+  include Base64Image
   attribute :nickname, String
   attribute :avatar, String
-  # change email and password separately in other commands
+  #TODO change email and password separately in other commands
 
-  validates :nickname, format: { without: /\s/ }
+  validates :nickname, format: {without: /\s/}
   validate :nickname_unique?
 
   private
@@ -15,7 +16,7 @@ class User::Form::UpdateForm < Rectify::Form
 
   def assign_avatar!
     return unless avatar.present?
-    self.avatar = File.open(avatar)
+    self.avatar = Base64Image.file_decode(avatar.split(',')[1], "#{Time.now.to_i}.jpg")
   end
 
   def downcase_nickname!
@@ -23,7 +24,7 @@ class User::Form::UpdateForm < Rectify::Form
   end
 
   def nickname_unique?
-    return if same_nickname? || (not nickname_in_use?)
+    return if nickname.nil? || same_nickname? || (not nickname_in_use?)
     errors.add(:nickname, 'Already in use')
   end
 

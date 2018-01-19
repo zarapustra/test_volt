@@ -3,9 +3,9 @@ class User::Command::Update < ApiCommand
 
   # TODO refactor
   def initialize(params = {})
-    @user = User.find(params[:id])
-    @form = User::Form::UpdateForm.from_params(params).with_context(user: user)
     @current_user = params[:current_user]
+    @user ||= params[:id].present? ? user!(params[:id]) : @current_user
+    @form = User::Form::UpdateForm.from_params(params).with_context(user: user)
     @msg_error = nil
   end
 

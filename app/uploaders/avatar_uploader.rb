@@ -11,10 +11,10 @@ class AvatarUploader < CarrierWave::Uploader::Base
     %w(jpg jpeg gif png)
   end
 
-  process resize_to_fit: [300, 300]
+  process resize_to_fill: [300, 300]
 
   version :thumb do
-    process resize_to_fill: [48, 48]
+    process resize_to_fill: [40, 40]
   end
 
   private
