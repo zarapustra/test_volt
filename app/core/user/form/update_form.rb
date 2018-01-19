@@ -15,6 +15,7 @@ class User::Form::UpdateForm < Rectify::Form
   end
 
   def assign_avatar!
+    #TODO rescue
     return unless avatar.present?
     self.avatar = Base64Image.file_decode(avatar.split(',')[1], "#{Time.now.to_i}.jpg")
   end
