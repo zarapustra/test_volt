@@ -5,8 +5,8 @@ class Api::V1::ReportsController < ApiController
         Report::ByAuthorWorker.perform_async(attributes)
         render json: {message: 'Report generation started'}
       end
+      on(:unauthorized) { render status: 403 }
       on(:invalid) { |errors| render status: 422, json: {errors: errors} }
-      on(:unauthorized) { render status: 401 }
     end
   end
 end

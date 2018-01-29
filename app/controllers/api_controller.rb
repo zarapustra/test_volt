@@ -6,14 +6,14 @@ class ApiController < ActionController::API
   private
 
   def authenticate_request
-    User::Command::AuthorizeApiRequest.call(request) do
+    User::Command::CheckAuth.call(request) do
       on(:ok) do |user|
         # self.current_user = user
         self.params.merge!(current_user: user)
       end
       on(:error) do |msg|
         logger.error(msg)
-        render status: 401
+        render status: 401 # unauthenticated
       end
     end
   end

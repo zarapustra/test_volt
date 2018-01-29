@@ -9,13 +9,12 @@ class Api::V1::AuthController < ApiController
         end
         render json: {auth_token: token}
       end
-      on(:invalid) { |errors| render status: 401, json: {errors: errors} }
+      on(:not_found) { render status: 404 }
+      on(:invalid) { |errors| render status: 422, json: {errors: errors} }
       on(:error) do |msg|
         logger.error(msg)
         render status: 500
       end
-      on(:unauthorized) { render status: 401 }
-      on(:not_found) { render status: 404 }
     end
   end
 end

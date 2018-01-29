@@ -1,4 +1,4 @@
-class User::Command::AuthorizeApiRequest < ApiCommand
+class User::Command::CheckAuth < ApiCommand
   def initialize(request)
     @headers = request.env
   end
@@ -17,7 +17,7 @@ class User::Command::AuthorizeApiRequest < ApiCommand
   attr_reader :headers
 
   def user
-    @user ||= User.find(decoded_auth_token[:user_id])
+    @user ||= User.find_by_id(decoded_auth_token[:user_id])
   end
 
   def decoded_auth_token

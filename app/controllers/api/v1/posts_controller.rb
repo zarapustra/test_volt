@@ -4,16 +4,16 @@ class Api::V1::PostsController < ApiController
   def create
     Post::Command::Create.call(params) do
       on(:ok) { |presenter| render status: 201, json: presenter.to_json }
+      on(:unauthorized) { render status: 403 }
       on(:invalid) { |errors| render status: 422, json: {errors: errors} }
-      on(:unauthorized) { render status: 401 }
     end
   end
 
   def show
     Post::Command::Show.call(params) do
       on(:ok) { |presenter| render json: presenter.to_json }
+      on(:unauthorized) { render status: 403 }
       on(:not_found) { render status: 404 }
-      on(:unauthorized) { render status: 401 }
     end
   end
 
@@ -24,7 +24,7 @@ class Api::V1::PostsController < ApiController
         response.set_header('Total-Posts', total_posts)
         render json: json
       end
-      on(:unauthorized) { render status: 401 }
+      on(:unauthorized) { render status: 403 }
     end
   end
 end
