@@ -10,7 +10,8 @@ class User::UserPresenter < Rectify::Presenter
       avatar: {
         thumb: Url.full_url(user.avatar&.thumb&.url),
         full: Url.full_url(user.avatar&.url)
-      }
+      },
+      admin: user.admin
     }
   end
 end

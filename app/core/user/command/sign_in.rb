@@ -30,7 +30,7 @@ class User::Command::SignIn < ApiCommand
     false
   end
 
-  def update_time_zone!
+  def update_time_zone! # TODO turn on
     hours = headers['UTC-OFFSET'].to_i / 60
     hours = 'UTC' if hours < -11 || hours > 13
     user.update_column(:time_zone, ActiveSupport::TimeZone[hours])

@@ -19,12 +19,12 @@ gem 'multi_json'
 gem 'kaminari'
 gem 'sidekiq'
 gem 'pundit'
-gem 'rolify'
 gem 'carrierwave'
 gem 'mini_magick'
 gem 'rack-cors'
 
 group :development do
+  gem 'awesome_print'
   gem 'listen', '>= 3.0.5', '< 3.2'
 end
 

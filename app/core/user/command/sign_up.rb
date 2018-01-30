@@ -9,7 +9,7 @@ class User::Command::SignUp < ApiCommand
   def call
     return broadcast(:unauthorized) unless authorize!
     return broadcast(:invalid, form.errors) unless form.valid?
-    return broadcast(:error, msg_error) unless user && assign_default_role!
+    return broadcast(:error, msg_error) unless user
     broadcast(:ok)
   end
 
@@ -19,13 +19,6 @@ class User::Command::SignUp < ApiCommand
     @user ||= User.create(form.attributes)
   rescue => e
     @msg_error = "Creating user: #{e.message}"
-    false
-  end
-
-  def assign_default_role!
-    @user.add_role :client
-  rescue => e
-    @msg_error = "Adding :client role to user: #{e.message}, user_id: #{@user.id}"
     false
   end
 
